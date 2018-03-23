@@ -1,0 +1,40 @@
+.err-msg{
+    color: #d50;
+    padding: 10px 0 10px 15px;
+    margin: 0;
+}
+.am-tab-bar{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: auto;
+  z-index: 99;
+}
+.page-content{
+  padding: 45px 5px;
+}
+#chat-page{
+  padding-bottom: 45px;
+}
+#chat-page .chat-me .am-list-extra{
+  flex-basis: auto;
+}
+#chat-page .chat-me .am-list-content{
+  padding-right: 15px;
+  text-align: right;
+}
+#chat-page .am-grid-icon{
+  display: none;
+}
+#chat-page .am-grid-text{
+  margin-top: 0;
+  font-size: 18px;
+}
+.stick-footer{
+  position: fixed;
+  left: 0;
+  width: 100%;
+  bottom: 0;
+  z-index: 99;
+}
