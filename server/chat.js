@@ -21,7 +21,22 @@ Router.get('/getMsgList', function (req, res) {
       }
     })
   })
-
+})
+Router.post('/setReadMsg', function (req, res) {
+  const to = req.cookies.userid;
+  const { from } = req.body;
+  Chat.update(
+    { from, to },
+    { '$set': { read: true } },
+    { multi: true },
+    function (err, doc) {
+      if (err) {
+        res.json({ code: 1, msg: '请稍后再试' })
+      } else {
+        console.log(doc.nModified);
+        res.json({ code: 0, num: doc.nModified })
+      }
+    })
 })
 
 module.exports = Router;

@@ -1,9 +1,9 @@
 import React from 'react';
 import { List, InputItem, NavBar, Icon, Grid } from 'antd-mobile';
 import { connect } from 'react-redux';
-import { getMsgList, sendMsg, recvMsg } from '../../redux/chat.redux';
+import { getMsgList, sendMsg, recvMsg, setReadMsg } from '../../redux/chat.redux';
 import { getChatId } from '../../unit'
-@connect(state => state, { getMsgList, sendMsg, recvMsg })
+@connect(state => state, { getMsgList, sendMsg, recvMsg, setReadMsg })
 class Chat extends React.Component {
   constructor(props) {
     super(props);
@@ -19,6 +19,10 @@ class Chat extends React.Component {
       this.props.recvMsg();
     }
   }
+  componentWillUnmount() {
+    const to = this.props.match.params.user;
+    this.props.setReadMsg(to)
+  }
   handleSubmit() {
     if (!this.state.text) return;
     const from = this.props.user._id;
@@ -27,6 +31,7 @@ class Chat extends React.Component {
     this.props.sendMsg(from, to, msg)
     this.setState({ text: '' });
   }
+
   fixedCarousel() {
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'))
@@ -40,13 +45,10 @@ class Chat extends React.Component {
       return null
     }
     const chatid = getChatId(this.props.user._id, id);
-    const chatMsg = this.props.chat.chatMsg.filter(v => v.chatid === chatid)
+    console.log(this.props.chat.chatMsg)
+    const chatMsg = this.props.chat.chatMsg.filter((v) => v.chatid === chatid)
     const emoji = '😄  😃  😀  😊  😉  😍  😘  😚  😗  😙  😜 😝  😛  😳  😁  😔  😌  😒  😞  😣  😢  😂  😭 😪  😥  😰  😅  😓  😩  😫  😨  😱  😠  😡  😤 😖  😆  😋  😷  😎  😴  😵  😲  😟  😦  😧  😈 👿  😮  😬  😐  😕  😯  😶  😇  😏  😑  😺  😸 😻  😽  😼  🙀  😿  😹  😾  👹  👺 👂 👀 👃 👅 👄 👍 👎 👌 👊 ✊ ✌ 👋 ✋ 👐 👆 👇 👉 👈 🙌 🙏 ☝ 👏 💪 🚶 🏃 💃 👫 👪 👬 👭 💏 💑👯 🙆 🙅 💁 🙋 💇 💅 👰 🙎 🙍 🙇 🎩 👑 👒👟 👞 👡  👠 👢 👕 👔 👚 👗 🎽 👖 👘 👙 💼 👜 👝 👛 👓 🎀 🌂 💄 💋 👣 💎 💍 '
       .split(' ').filter(v => v).map(v => ({ text: v }))
-    console.log(chatid)
-    console.log(this.props.chat.chatMsg)
-    console.log(chatMsg)
-
     return (
       <div id='chat-page'>
         <NavBar

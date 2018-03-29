@@ -1,10 +1,12 @@
 import axios from 'axios';
 import socket from 'socket.io-client';
+import { stat } from 'fs';
 
 const io = socket('ws://localhost:6063');
 
 const MSG_LIST = 'MSG_LIST';
 const MSG_RECV = 'MSG_RECV';
+const READ_MSG = 'READ_MSG';
 
 const initState = {
   chatMsg: [],
@@ -19,6 +21,20 @@ export function chat(state = initState, action) {
     case MSG_RECV:
       const n = action.data.to === action.userid ? 1 : 0;
       return { ...state, chatMsg: [...state.chatMsg, action.data], unRead: state.unRead + n }
+    case READ_MSG:
+      const { from, to, num } = action.data;
+      return {
+        ...state,
+        unRead: state.unRead - num,
+        chatMsg: state.chatMsg.map(v => {
+          console.log((v.from === from && v.to === to))
+          if (v.from === from && v.to === to) {
+            return { ...v, read: true };
+          } else {
+            return v;
+          }
+        })
+      }
     default:
       return state;
   }
@@ -30,10 +46,24 @@ function msgList(data, userid) {
 function msgRecv(data, userid) {
   return { data, userid, type: MSG_RECV }
 }
+function redMsg(data) {
+  return { data, type: READ_MSG };
+}
 // 发送数据
 export function sendMsg(from, to, msg) {
   return dispatch => {
     io.emit('sendMsg', { from, to, msg });
+  }
+}
+export function setReadMsg(from) {
+  return (dispatch, getState) => {
+    const to = getState().user._id;
+    console.log(to)
+    axios.post('/chat/setReadMsg', { from }).then(res => {
+      if(res.status === 200&& res.data.code === 0){
+        dispatch(redMsg({ from, to, num: res.data.num }))
+      }
+    })
   }
 }
 // 接受数据
@@ -50,7 +80,6 @@ export function getMsgList() {
   return (dispatch, getState) => {
     axios.get('/chat/getMsgList').then(res => {
       if (res.status === 200 && res.data.code === 0) {
-        console.log(getState().user._id)
         const userid = getState().user._id;
         dispatch(msgList(res.data.data, userid))
       }
