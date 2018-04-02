@@ -1,6 +1,6 @@
 import axios from 'axios';
 import socket from 'socket.io-client';
-import { stat } from 'fs';
+
 
 const io = socket('ws://localhost:6063');
 
@@ -27,7 +27,6 @@ export function chat(state = initState, action) {
         ...state,
         unRead: state.unRead - num,
         chatMsg: state.chatMsg.map(v => {
-          console.log((v.from === from && v.to === to))
           if (v.from === from && v.to === to) {
             return { ...v, read: true };
           } else {
@@ -58,7 +57,6 @@ export function sendMsg(from, to, msg) {
 export function setReadMsg(from) {
   return (dispatch, getState) => {
     const to = getState().user._id;
-    console.log(to)
     axios.post('/chat/setReadMsg', { from }).then(res => {
       if(res.status === 200&& res.data.code === 0){
         dispatch(redMsg({ from, to, num: res.data.num }))

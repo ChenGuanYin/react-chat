@@ -78,7 +78,6 @@ Router.post('/update', function (req, res) {
     return res.json({ code: 1 });
   } else {
     const body = req.body;
-    console.log(body);
     User.findByIdAndUpdate(userid, body, function (err, doc) {
       if (err) {
         return res.json({ code: 1, msg: '请稍后再试' })

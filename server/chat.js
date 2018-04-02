@@ -33,7 +33,6 @@ Router.post('/setReadMsg', function (req, res) {
       if (err) {
         res.json({ code: 1, msg: '请稍后再试' })
       } else {
-        console.log(doc.nModified);
         res.json({ code: 0, num: doc.nModified })
       }
     })
